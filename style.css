@@ -1016,6 +1016,75 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* ==========================================
+   FAMILY SYNC PANEL
+   ========================================== */
+.sync-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 16px 20px;
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.sync-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sync-icon {
+  font-size: 24px;
+}
+.sync-info {
+  display: flex;
+  flex-direction: column;
+}
+.sync-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.sync-status {
+  font-size: 11px;
+  color: var(--text-sub);
+}
+.sync-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sync-input {
+  padding: 8px 12px;
+  font-size: 13px;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  width: 140px;
+}
+.sync-input:focus {
+  border-color: var(--primary);
+  background: white;
+}
+.sync-connected-panel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sync-code-display {
+  font-size: 13px;
+  color: var(--text-main);
+  background: var(--bg-subtle);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================
    RESPONSIVE
    ========================================== */
 @media (min-width: 640px) {

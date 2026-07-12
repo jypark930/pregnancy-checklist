@@ -1,6 +1,13 @@
 // ============================================================
-// 임신 체크리스트 - 메인 앱 로직
+// 임신 체크리스트 - 메인 앱 로직 (Supabase 동기화 연동)
 // ============================================================
+
+// ─── Supabase Configuration ──────────────────────────────────
+const SUPABASE_URL = "https://eajpkydtyxmxsyhzqgho.supabase.co";
+const SUPABASE_KEY = "sb_publishable_s1vL9ya3BKvYWtqvDiE4pw_yfXZqig5";
+let supabaseClient = null;
+let familyCode = localStorage.getItem('family_code') || '';
+let syncChannel = null;
 
 // ─── State ──────────────────────────────────────────────────
 let checklistData = [];
@@ -16,6 +23,7 @@ function init() {
   renderAll();
   bindGlobalEvents();
   injectSvgDefs();
+  initSupabase();
 }
 
 // ─── Storage ─────────────────────────────────────────────────
@@ -33,6 +41,11 @@ function loadData() {
 }
 
 function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(checklistData));
+  uploadToSupabase();
+}
+
+function saveDataLocallyOnly() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(checklistData));
 }
 
@@ -477,6 +490,179 @@ function bindGlobalEvents() {
     e.preventDefault();
     document.getElementById('checklist-section').scrollIntoView({ behavior: 'smooth' });
   });
+
+  // Supabase Sync Events
+  document.getElementById('connect-sync-btn').addEventListener('click', () => {
+    const val = document.getElementById('sync-code-input').value.trim();
+    if (!val) { showToast("⚠️ 코드를 입력해 주세요"); return; }
+    connectSyncCode(val);
+  });
+  document.getElementById('create-sync-btn').addEventListener('click', () => {
+    generateSyncCode();
+  });
+  document.getElementById('copy-code-btn').addEventListener('click', () => {
+    if (!familyCode) return;
+    navigator.clipboard.writeText(familyCode)
+      .then(() => showToast("📋 코드가 복사되었습니다! 배우자에게 전달하세요."))
+      .catch(() => showToast("❌ 복사에 실패했습니다. 직접 복사해 주세요."));
+  });
+  document.getElementById('disconnect-sync-btn').addEventListener('click', () => {
+    if (confirm("연결을 해제할까요? 로컬 데이터는 유지되지만 동기화가 중단됩니다.")) {
+      disconnectSync();
+    }
+  });
+}
+
+// ─── Supabase Sync Logic ──────────────────────────────────────
+function initSupabase() {
+  if (window.supabase) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    updateSyncUI();
+    if (familyCode) {
+      downloadFromSupabase();
+      subscribeToRealtime();
+    }
+  } else {
+    console.warn("Supabase SDK is not loaded.");
+    setSyncStatusText("⚠️ 동기화 플러그인 로드 실패");
+  }
+}
+
+function setSyncStatusText(text) {
+  const el = document.getElementById('sync-status-text');
+  if (el) el.textContent = text;
+}
+
+function updateSyncUI() {
+  const syncActions = document.getElementById('sync-actions');
+  const syncConnectedPanel = document.getElementById('sync-connected-panel');
+  const currentCodeDisplay = document.getElementById('current-code-display');
+  
+  if (familyCode) {
+    syncActions.style.display = 'none';
+    syncConnectedPanel.style.display = 'flex';
+    currentCodeDisplay.textContent = familyCode;
+    setSyncStatusText("☁️ 동기화 연결됨");
+  } else {
+    syncActions.style.display = 'flex';
+    syncConnectedPanel.style.display = 'none';
+    setSyncStatusText("💡 코드를 만들어 가족과 동기화하세요");
+  }
+}
+
+async function uploadToSupabase() {
+  if (!supabaseClient || !familyCode) return;
+  setSyncStatusText("☁️ 동기화 업로드 중...");
+  
+  try {
+    const { error } = await supabaseClient
+      .from('pregnancy_checklists')
+      .upsert({
+        family_code: familyCode,
+        checklist_data: checklistData,
+        updated_at: new Date().toISOString()
+      });
+      
+    if (error) {
+      console.error("Supabase upload error:", error);
+      setSyncStatusText("❌ 동기화 실패 (서버 오류)");
+    } else {
+      setSyncStatusText("☁️ 실시간 동기화 완료");
+    }
+  } catch (e) {
+    console.error("Network error during upload:", e);
+    setSyncStatusText("❌ 오프라인 상태 (네트워크 확인)");
+  }
+}
+
+async function downloadFromSupabase() {
+  if (!supabaseClient || !familyCode) return;
+  setSyncStatusText("☁️ 서버에서 데이터 가져오는 중...");
+  
+  try {
+    const { data, error } = await supabaseClient
+      .from('pregnancy_checklists')
+      .select('checklist_data')
+      .eq('family_code', familyCode)
+      .single();
+      
+    if (error) {
+      // Row not found (PGRST116)
+      if (error.code === 'PGRST116') {
+        console.log("No remote data found for this code. Uploading local state as default...");
+        await uploadToSupabase();
+      } else {
+        console.error("Supabase download error:", error);
+        setSyncStatusText("❌ 데이터 불러오기 실패");
+      }
+    } else if (data && data.checklist_data) {
+      checklistData = data.checklist_data;
+      saveDataLocallyOnly();
+      renderAll();
+      setSyncStatusText("☁️ 실시간 동기화 완료");
+      showToast("☁️ 최신 데이터를 동기화했습니다.");
+    }
+  } catch (e) {
+    console.error("Network error during download:", e);
+    setSyncStatusText("❌ 불러오기 실패 (오프라인)");
+  }
+}
+
+function subscribeToRealtime() {
+  if (!supabaseClient || !familyCode) return;
+  if (syncChannel) {
+    supabaseClient.removeChannel(syncChannel);
+  }
+  
+  syncChannel = supabaseClient
+    .channel('public:pregnancy_checklists')
+    .on('postgres_changes', {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'pregnancy_checklists',
+      filter: `family_code=eq.${familyCode}`
+    }, payload => {
+      console.log("Realtime event received:", payload);
+      if (payload.new && payload.new.checklist_data) {
+        checklistData = payload.new.checklist_data;
+        saveDataLocallyOnly();
+        renderAll();
+        showToast("☁️ 공동 양육자가 체크리스트를 업데이트했습니다!");
+      }
+    })
+    .subscribe();
+}
+
+async function connectSyncCode(code) {
+  familyCode = code;
+  localStorage.setItem('family_code', familyCode);
+  updateSyncUI();
+  await downloadFromSupabase();
+  subscribeToRealtime();
+}
+
+async function generateSyncCode() {
+  // Generate random code: baby-xxxx
+  const randNum = Math.floor(1000 + Math.random() * 9000);
+  const code = `baby-${randNum}`;
+  if (confirm(`새 가족 코드를 생성할까요?\n코드: [ ${code} ]\n이 코드를 배우자 기기에 입력하면 공동 동기화가 시작됩니다.`)) {
+    familyCode = code;
+    localStorage.setItem('family_code', familyCode);
+    updateSyncUI();
+    await uploadToSupabase();
+    subscribeToRealtime();
+  }
+}
+
+function disconnectSync() {
+  if (syncChannel) {
+    supabaseClient.removeChannel(syncChannel);
+    syncChannel = null;
+  }
+  familyCode = '';
+  localStorage.removeItem('family_code');
+  updateSyncUI();
+  showToast("🔌 동기화 연결이 해제되었습니다.");
 }
 
 // ─── Toast ────────────────────────────────────────────────────

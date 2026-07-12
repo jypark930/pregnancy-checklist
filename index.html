@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Gowun+Dodum&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -121,6 +123,27 @@
         <p class="section-tag">주차별 미션</p>
         <h2 class="section-title">체크리스트</h2>
         <p class="section-desc">완료된 주차는 자동으로 숨겨집니다</p>
+      </div>
+
+      <!-- Family Sync Section -->
+      <div class="sync-panel" id="sync-panel">
+        <div class="sync-left">
+          <span class="sync-icon">☁️</span>
+          <div class="sync-info">
+            <span class="sync-title">가족 공동 양육 동기화</span>
+            <span class="sync-status" id="sync-status-text">동기화 연결 준비 중...</span>
+          </div>
+        </div>
+        <div class="sync-right" id="sync-actions">
+          <input type="text" id="sync-code-input" class="sync-input" placeholder="가족 코드 입력" />
+          <button class="options-btn" id="connect-sync-btn">연결</button>
+          <button class="options-btn" id="create-sync-btn">새 코드 발급</button>
+        </div>
+        <div class="sync-connected-panel" id="sync-connected-panel" style="display:none;">
+          <span class="sync-code-display">코드: <strong id="current-code-display">...</strong></span>
+          <button class="options-btn" id="copy-code-btn">코드 복사</button>
+          <button class="options-btn secondary" id="disconnect-sync-btn">연결 해제</button>
+        </div>
       </div>
 
       <!-- Filter / Options Bar -->
