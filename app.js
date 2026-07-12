@@ -105,12 +105,18 @@ function makeWeekCard(week, wi, allDone, isHidden) {
     ? 'linear-gradient(135deg, #6ee7b7 0%, #34d399 100%)'
     : (gradients[week.trimester] || gradients[1]);
 
+  const isNumeric = !isNaN(week.week);
+  const badgeNum = week.week;
+  const badgeUnit = isNumeric ? '주차' : '';
+  const numFontSize = isNumeric ? '18px' : '11px';
+  const labelText = isNumeric ? `${week.week}주차` : week.week;
+
   card.innerHTML = `
     <div class="week-header" id="week-header-${wi}" role="button" tabindex="0"
          aria-expanded="false" aria-controls="week-body-${wi}">
       <div class="week-badge" style="background:${gradient}">
-        <span class="week-badge-num">${week.week}</span>
-        <span class="week-badge-unit">주차</span>
+        <span class="week-badge-num" style="font-size:${numFontSize}">${badgeNum}</span>
+        <span class="week-badge-unit">${badgeUnit}</span>
       </div>
       <div class="week-header-info">
         <div class="week-title">${week.title}</div>
@@ -131,7 +137,7 @@ function makeWeekCard(week, wi, allDone, isHidden) {
         ${week.items.map((item, ii) => makeItemHTML(item, wi, ii)).join('')}
       </div>
       <div class="add-item-row">
-        <button class="add-item-btn" id="add-btn-${wi}" aria-label="${week.week}주차 항목 추가">
+        <button class="add-item-btn" id="add-btn-${wi}" aria-label="${labelText} 항목 추가">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
           미션 추가하기
         </button>
@@ -248,7 +254,8 @@ function toggleItem(wi, ii) {
   const wasAllDone = checklistData[wi].items.every(it => it.done);
   if (wasAllDone && !showCompleted) {
     // All done in this week → collapse and re-render
-    showToast(`🎉 ${checklistData[wi].week}주차 모든 미션 완료!`);
+    const label = !isNaN(checklistData[wi].week) ? `${checklistData[wi].week}주차` : checklistData[wi].week;
+    showToast(`🎉 ${label} 모든 미션 완료!`);
     triggerConfetti();
     setTimeout(() => { renderAll(); }, 600);
   } else {
@@ -317,7 +324,8 @@ function openEditModal(wi, ii) {
   const item = checklistData[wi].items[ii];
   document.getElementById('modal-input').value = item.text;
   document.getElementById('modal-category').value = item.category;
-  document.getElementById('modal-title').textContent = `${checklistData[wi].week}주차 항목 편집`;
+  const label = !isNaN(checklistData[wi].week) ? `${checklistData[wi].week}주차` : checklistData[wi].week;
+  document.getElementById('modal-title').textContent = `${label} 항목 편집`;
   showModal('modal-overlay');
   setTimeout(() => document.getElementById('modal-input').focus(), 100);
 }
@@ -345,11 +353,13 @@ function openAddModal(wi) {
   addTarget = { wi };
   document.getElementById('add-modal-input').value = '';
   document.getElementById('add-modal-category').value = 'health';
-  document.getElementById('add-modal-title').textContent = `${checklistData[wi].week}주차 미션 추가`;
+  const label = !isNaN(checklistData[wi].week) ? `${checklistData[wi].week}주차` : checklistData[wi].week;
+  document.getElementById('add-modal-title').textContent = `${label} 미션 추가`;
   showModal('add-modal-overlay');
   setTimeout(() => document.getElementById('add-modal-input').focus(), 100);
 }
 
+// ─── Modal: Add ───────────────────────────────────────────────
 function closeAddModal() {
   addTarget = null;
   hideModal('add-modal-overlay');
@@ -360,7 +370,8 @@ function confirmAdd() {
   const text = document.getElementById('add-modal-input').value.trim();
   if (!text) { shakeModal('add-modal'); return; }
   const { wi } = addTarget;
-  const newId = `w${checklistData[wi].week}_custom_${Date.now()}`;
+  const weekCleanId = checklistData[wi].week.toString().replace(/\s+/g, '');
+  const newId = `w${weekCleanId}_custom_${Date.now()}`;
   checklistData[wi].items.push({
     id: newId,
     text,
