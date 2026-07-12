@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>임신 여정 체크리스트 | 우리 아기와의 40주</title>
+  <meta name="description" content="임산부와 가족이 함께하는 주차별 임신 체크리스트. 5주차부터 40주차까지 빠짐없이 챙기세요." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Gowun+Dodum&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">🌸 우리 아기와의 특별한 여정</div>
+      <h1 class="hero-title">임신 <span class="highlight">40주</span>,<br/>함께 완성하는<br/>소중한 기록</h1>
+      <p class="hero-desc">임산부와 가족이 함께 챙기는<br/>주차별 맞춤형 체크리스트 플랫폼</p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num">36</span>
+          <span class="stat-label">주차</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num">100+</span>
+          <span class="stat-label">미션</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num">∞</span>
+          <span class="stat-label">사랑</span>
+        </div>
+      </div>
+      <a href="#checklist-section" class="cta-btn" id="start-btn">
+        <span>체크리스트 시작하기</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="hero-illustration">
+      <div class="floating-card card-a">
+        <span>✅</span> 산부인과 첫 방문
+      </div>
+      <div class="floating-card card-b">
+        <span>💊</span> 엽산 복용 시작
+      </div>
+      <div class="floating-card card-c">
+        <span>🏥</span> 기형아 검사
+      </div>
+    </div>
+  </section>
+
+  <!-- Info Section -->
+  <section class="info-section" id="info-section">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag">어떻게 사용하나요?</p>
+        <h2 class="section-title">3가지로 완성하는<br/>임신 여정 관리</h2>
+      </div>
+      <div class="info-cards">
+        <div class="info-card" id="info-card-1">
+          <div class="info-icon">📋</div>
+          <h3>주차별 확인</h3>
+          <p>5주차부터 40주차까지 꼭 필요한 항목들이 주차별로 정리되어 있어요</p>
+        </div>
+        <div class="info-card" id="info-card-2">
+          <div class="info-icon">✏️</div>
+          <h3>자유로운 편집</h3>
+          <p>항목을 추가, 삭제, 수정하며 나만의 맞춤형 체크리스트를 만들어요</p>
+        </div>
+        <div class="info-card" id="info-card-3">
+          <div class="info-icon">👨‍👩‍👧</div>
+          <h3>함께 완성</h3>
+          <p>임산부와 남편이 함께 미션을 완료하며 특별한 여정을 공유해요</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Progress Overview -->
+  <section class="progress-section" id="progress-section">
+    <div class="container">
+      <div class="progress-card" id="overall-progress-card">
+        <div class="progress-card-left">
+          <p class="progress-label">전체 진행률</p>
+          <div class="progress-numbers">
+            <span id="completed-count">0</span>
+            <span class="progress-separator">/</span>
+            <span id="total-count">0</span>
+            <span class="progress-unit">완료</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" id="main-progress-bar"></div>
+          </div>
+          <p class="progress-sub" id="progress-sub-text">첫 번째 미션을 완료해보세요! 🎉</p>
+        </div>
+        <div class="progress-circle-wrap">
+          <svg class="progress-ring" width="100" height="100" viewBox="0 0 100 100">
+            <circle class="progress-ring-bg" cx="50" cy="50" r="40" />
+            <circle class="progress-ring-fill" id="progress-ring-fill" cx="50" cy="50" r="40"
+              stroke-dasharray="251.2"
+              stroke-dashoffset="251.2" />
+          </svg>
+          <div class="progress-ring-text" id="progress-percent-text">0%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Checklist Section -->
+  <section class="checklist-section" id="checklist-section">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag">주차별 미션</p>
+        <h2 class="section-title">체크리스트</h2>
+        <p class="section-desc">완료된 주차는 자동으로 숨겨집니다</p>
+      </div>
+
+      <!-- Filter / Options Bar -->
+      <div class="options-bar" id="options-bar">
+        <div class="options-left">
+          <label class="toggle-wrap" id="show-completed-wrap">
+            <input type="checkbox" id="show-completed-toggle" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">완료 주차 보기</span>
+          </label>
+        </div>
+        <div class="options-right">
+          <button class="options-btn" id="expand-all-btn">모두 펼치기</button>
+          <button class="options-btn" id="collapse-all-btn">모두 접기</button>
+        </div>
+      </div>
+
+      <!-- Week Accordion List -->
+      <div class="week-list" id="week-list">
+        <!-- Dynamically rendered by JS -->
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="empty-state" style="display:none;">
+        <div class="empty-icon">🎊</div>
+        <h3>모든 주차를 완료했어요!</h3>
+        <p>소중한 임신 여정을 함께해주셔서 감사합니다</p>
+        <button class="cta-btn secondary" id="reset-all-btn">처음부터 다시 보기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Add Week CTA -->
+  <section class="add-section" id="add-section">
+    <div class="container">
+      <div class="add-cta-card" id="add-cta-card">
+        <div class="add-cta-icon">✨</div>
+        <h3>나만의 항목 추가하기</h3>
+        <p>목록에서 + 버튼을 눌러 각 주차에 새로운 미션을 추가해보세요</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="footer">
+    <div class="container">
+      <p class="footer-logo">🌸 임신 여정 체크리스트</p>
+      <p class="footer-desc">임산부와 가족이 함께 만드는 소중한 40주의 기록</p>
+      <p class="footer-copy">© 2026 임신 여정 체크리스트. 건강하고 행복한 출산을 응원합니다 💕</p>
+    </div>
+  </footer>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="edit-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">항목 편집</h3>
+        <button class="modal-close" id="modal-close-btn" aria-label="닫기">✕</button>
+      </div>
+      <div class="modal-body">
+        <label for="modal-input" class="modal-label">미션 내용</label>
+        <textarea id="modal-input" class="modal-textarea" placeholder="미션 내용을 입력하세요..." rows="3"></textarea>
+        <label for="modal-category" class="modal-label">카테고리</label>
+        <select id="modal-category" class="modal-select">
+          <option value="health">🏥 건강</option>
+          <option value="prep">🎒 준비물</option>
+          <option value="admin">📝 행정</option>
+          <option value="baby">👶 아기용품</option>
+          <option value="mental">💆 정서</option>
+          <option value="etc">💡 기타</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn cancel" id="modal-cancel-btn">취소</button>
+        <button class="modal-btn confirm" id="modal-confirm-btn">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Item Modal -->
+  <div class="modal-overlay" id="add-modal-overlay">
+    <div class="modal" id="add-modal" role="dialog" aria-modal="true" aria-labelledby="add-modal-title">
+      <div class="modal-header">
+        <h3 class="modal-title" id="add-modal-title">새 미션 추가</h3>
+        <button class="modal-close" id="add-modal-close-btn" aria-label="닫기">✕</button>
+      </div>
+      <div class="modal-body">
+        <label for="add-modal-input" class="modal-label">미션 내용 <span style="color:#e879a0">*</span></label>
+        <textarea id="add-modal-input" class="modal-textarea" placeholder="예) 산부인과 예약하기, 엽산 구매하기..." rows="3"></textarea>
+        <label for="add-modal-category" class="modal-label">카테고리</label>
+        <select id="add-modal-category" class="modal-select">
+          <option value="health">🏥 건강</option>
+          <option value="prep">🎒 준비물</option>
+          <option value="admin">📝 행정</option>
+          <option value="baby">👶 아기용품</option>
+          <option value="mental">💆 정서</option>
+          <option value="etc">💡 기타</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn cancel" id="add-modal-cancel-btn">취소</button>
+        <button class="modal-btn confirm" id="add-modal-confirm-btn">추가하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
